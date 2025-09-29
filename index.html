@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard Academy - Professional Cybersecurity Training</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #00d4ff;
+            --secondary-color: #ff00ff;
+            --success-color: #00ff88;
+            --danger-color: #ff0055;
+            --warning-color: #ffaa00;
+            --dark-bg: #0a0e27;
+            --darker-bg: #060817;
+            --light-text: #ffffff;
+            --dim-text: #8892b0;
+            --card-bg: rgba(17, 25, 58, 0.75);
+            --border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #060817 100%);
+            min-height: 100vh;
+            color: var(--light-text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+            z-index: 2;
+            animation: screenFadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes screenFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Main Menu Screen */
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .game-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+            animation: logoGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .game-subtitle {
+            color: var(--dim-text);
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 300px;
+        }
+
+        .cyber-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--card-bg), rgba(0, 212, 255, 0.1));
+            border: 2px solid var(--border-color);
+            color: var(--light-text);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cyber-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .cyber-btn:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .cyber-btn:hover::before {
+            left: 100%;
+        }
+
+        /* HUD Elements */
+        .hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(10, 14, 39, 0.95) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hud-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--dim-text);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--light-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        /* Character Display */
+        .character-display {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .character-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-frame {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Campaign Map */
+        .campaign-container {
+            padding: 7rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .world-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .mission-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .mission-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .mission-card.completed {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), var(--card-bg));
+            border-color: var(--success-color);
+        }
+
+        .mission-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .mission-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .mission-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .mission-description {
+            color: var(--dim-text);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .mission-difficulty {
+            display: flex;
+            gap: 0.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .difficulty-star {
+            color: var(--warning-color);
+        }
+
+        .mission-rewards {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--dim-text);
+        }
+
+        .replay-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--warning-color);
+            color: var(--dark-bg);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Shop System */
+        .shop-container {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .shop-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .shop-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--dim-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .shop-tab.active {
+            color: var(--primary-color);
+        }
+
+        .shop-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .shop-item {
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.2);
+        }
+
+        .shop-item.owned {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--success-color);
+        }
+
+        .shop-item.equipped {
+            border-color: var(--warning-color);
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
+        }
+
+        .item-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .item-stats {
+            font-size: 0.9rem;
+            color: var(--dim-text);
+            margin-bottom: 1rem;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: var(--warning-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Character Customization */
+        .character-creator {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .character-preview {
+            text-align: center;
+        }
+
+        .customization-options {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .customization-section {
+            background: rgba(0, 212, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .customization-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option.selected {
+            border-color: var(--primary-color);
+            transform: scale(1.2);
+        }
+
+        /* Mini-Games Improvements */
+        .typing-game {
+            background: #000;
+            border: 2px solid var(--success-color);
+            border-radius: 10px;
+            padding: 2rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .typing-text {
+            font-size: 1.2rem;
+            line-height: 2;
+            margin-bottom: 1rem;
+        }
+
+        .typing-text .correct {
+            color: var(--success-color);
+        }
+
+        .typing-text .incorrect {
+            color: var(--danger-color);
+            background: rgba(255, 0, 85, 0.2);
+        }
+
+        .typing-text .current {
+            background: rgba(0, 212, 255, 0.3);
+            animation: blink 1s infinite;
+        }
+
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-card.flipped {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .memory-card.matched {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: var(--success-color);
+            pointer-events: none;
+        }
+
+        /* Firewall Puzzle Game */
+        .firewall-puzzle {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+        }
+
+        .puzzle-node {
+            aspect-ratio: 1;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .puzzle-node.active {
+            background: rgba(0, 212, 255, 0.3);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .puzzle-node.connected {
+            background: rgba(0, 255, 136, 0.3);
+            border-color: var(--success-color);
+        }
+
+        /* Progress and Achievements */
+        .progress-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .xp-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .xp-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: -400px;
+            background: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            min-width: 300px;
+            transition: right 0.5s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            right: 20px;
+        }
+
+        .notification-header {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 0, 85, 0.2);
+            border: 1px solid var(--danger-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--danger-color);
+            transform: rotate(90deg);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 100px;
+            height: 100px;
+            border: 3px solid rgba(0, 212, 255, 0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-logo {
+                font-size: 2.5rem;
+            }
+            
+            .hud {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .world-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .character-creator {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-grid"></div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div style="margin-top: 2rem; font-family: 'Orbitron', monospace; color: var(--primary-color); font-size: 1.2rem;">
+            INITIALIZING CYBERGUARD ACADEMY...
+        </div>
+    </div>
+
+    <!-- Main Menu Screen -->
+    <div class="screen active" id="mainMenuScreen">
+        <div class="main-menu">
+            <h1 class="game-logo">CYBERGUARD ACADEMY</h1>
+            <p class="game-subtitle">MASTER THE ART OF CYBERSECURITY</p>
+            <div class="menu-buttons">
+                <button class="cyber-btn" onclick="game.startCampaign()">START CAMPAIGN</button>
+                <button class="cyber-btn" onclick="game.continueGame()">CONTINUE</button>
+                <button class="cyber-btn" onclick="game.showCharacter()">CHARACTER</button>
+                <button class="cyber-btn" onclick="game.showShop()">SHOP</button>
+                <button class="cyber-btn" onclick="game.showSettings()">SETTINGS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campaign Screen -->
+    <div class="screen" id="campaignScreen">
+        <div class="hud">
+            <div class="hud-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value" id="playerLevel">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">XP</span>
+                    <span class="stat-value" id="playerXP">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Credits</span>
+                    <span class="stat-value" id="playerCredits">1000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Rank</span>
+                    <span class="stat-value" id="playerRank">Novice</span>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="game.showShop()">SHOP</button>
+                <button class="nav-btn" onclick="game.showProfile()">PROFILE</button>
+                <button class="nav-btn" onclick="game.returnToMenu()">MENU</button>
+            </div>
+        </div>
+        
+        <div class="campaign-container">
+            <div class="progress-card">
+                <h2 style="font-family: 'Orbitron', monospace; margin-bottom: 1rem;">CAMPAIGN PROGRESS</h2>
+                <div class="xp-bar">
+                    <div class="xp-fill" id="xpBar" style="width: 0%"></div>
+                </div>
+                <p style="margin-top: 0.5rem; color: var(--dim-text);">Complete missions to earn XP and unlock new challenges</p>
+            </div>
+            
+            <h2 style="font-family: 'Orbitron', monospace; margin-bottom: 1rem;">AVAILABLE MISSIONS</h2>
+            <div class="world-grid" id="missionGrid">
+                <!-- Missions will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Screen -->
+    <div class="screen" id="challengeScreen">
+        <div class="hud">
+            <div class="hud-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Mission</span>
+                    <span class="stat-value" id="currentMission">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Score</span>
+                    <span class="stat-value" id="challengeScore">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Time</span>
+                    <span class="stat-value" id="challengeTime">00:00</span>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="game.pauseChallenge()">PAUSE</button>
+                <button class="nav-btn" onclick="game.exitChallenge()">EXIT</button>
+            </div>
+        </div>
+        
+        <div class="challenge-container" style="padding: 7rem 2rem 2rem; max-width: 1200px; margin: 0 auto;">
+            <div class="challenge-header" style="text-align: center; margin-bottom: 2rem;">
+                <h1 id="challengeTitle" style="font-family: 'Orbitron', monospace; font-size: 2.5rem; margin-bottom: 1rem; 
+                    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+                    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Loading...
+                </h1>
+                <p id="challengeDescription" style="color: var(--dim-text);"></p>
+            </div>
+            <div id="challengeContent" style="background: var(--card-bg); border: 2px solid var(--border-color); 
+                 border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                <!-- Challenge content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-header" id="notificationTitle">NOTIFICATION</div>
+        <div id="notificationContent">Message here</div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="game.closeModal()">✕</div>
+            <div id="modalContent">
+                <!-- Modal content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class CyberGuardAcademy {
+            constructor() {
+                this.player = {
+                    level: 1,
+                    xp: 0,
+                    credits: 1000,
+                    rank: 'Novice',
+                    score: 0,
+                    completedMissions: [],
+                    missionReplays: {},
+                    achievements: [],
+                    inventory: [],
+                    equipped: {
+                        avatar: '🛡️',
+                        frame: 'default',
+                        boost: null,
+                        theme: 'cyan'
+                    },
+                    character: {
+                        name: 'Agent-' + Math.floor(Math.random() * 9999),
+                        avatar: '🛡️',
+                        color: '#00d4ff',
+                        frameStyle: 'default'
+                    },
+                    statistics: {
+                        totalTime: 0,
+                        missionsCompleted: 0,
+                        threatsNeutralized: 0,
+                        accuracy: 100,
+                        totalXpEarned: 0,
+                        highestStreak: 0,
+                        currentStreak: 0
+                    }
+                };
+
+                this.missions = this.generateAllMissions();
+                this.shopItems = this.createShopItemsData();
+                this.currentScreen = 'mainMenuScreen';
+                this.challengeTimer = null;
+                this.challengeStartTime = null;
+                this.currentChallenge = null;
+                
+                this.init();
+            }
+
+            generateAllMissions() {
+                return [
+                    // Chapter 1: Fundamentals
+                    {
+                        id: 'phishing_basics',
+                        title: 'Phishing Detection 101',
+                        icon: '🎣',
+                        description: 'Learn to identify and prevent phishing attacks',
+                        difficulty: 1,
+                        xpReward: 100,
+                        creditReward: 250,
+                        type: 'phishing',
+                        chapter: 1,
+                        unlocked: true
+                    },
+                    {
+                        id: 'password_basics',
+                        title: 'Password Fundamentals',
+                        icon: '🔐',
+                        description: 'Master the basics of password security',
+                        difficulty: 1,
+                        xpReward: 100,
+                        creditReward: 250,
+                        type: 'password',
+                        chapter: 1,
+                        unlocked: true
+                    },
+                    {
+                        id: 'typing_security',
+                        title: 'Secure Communications',
+                        icon: '⌨️',
+                        description: 'Practice typing security protocols accurately',
+                        difficulty: 1,
+                        xpReward: 120,
+                        creditReward: 300,
+                        type: 'typing',
+                        chapter: 1,
+                        unlocked: true
+                    },
+                    // Chapter 2: Network Security
+                    {
+                        id: 'network_defense',
+                        title: 'Network Defense',
+                        icon: '🛡️',
+                        description: 'Defend your network against incoming threats',
+                        difficulty: 2,
+                        xpReward: 200,
+                        creditReward: 400,
+                        type: 'network',
+                        chapter: 2,
+                        unlocked: false,
+                        requireLevel: 3
+                    },
+                    {
+                        id: 'firewall_config',
+                        title: 'Firewall Configuration',
+                        icon: '🔥',
+                        description: 'Configure firewall rules to protect systems',
+                        difficulty: 2,
+                        xpReward: 220,
+                        creditReward: 450,
+                        type: 'firewall',
+                        chapter: 2,
+                        unlocked: false,
+                        requireLevel: 4
+                    },
+                    {
+                        id: 'port_scanner',
+                        title: 'Port Security',
+                        icon: '🔌',
+                        description: 'Identify and secure open ports',
+                        difficulty: 2,
+                        xpReward: 180,
+                        creditReward: 380,
+                        type: 'memory',
+                        chapter: 2,
+                        unlocked: false,
+                        requireLevel: 5
+                    },
+                    // Chapter 3: Social Engineering
+                    {
+                        id: 'social_engineering',
+                        title: 'Social Engineering Defense',
+                        icon: '🕵️',
+                        description: 'Recognize and prevent social engineering attacks',
+                        difficulty: 3,
+                        xpReward: 250,
+                        creditReward: 500,
+                        type: 'social',
+                        chapter: 3,
+                        unlocked: false,
+                        requireLevel: 6
+                    },
+                    {
+                        id: 'pretexting',
+                        title: 'Pretexting Awareness',
+                        icon: '🎭',
+                        description: 'Identify pretexting attempts and respond appropriately',
+                        difficulty: 3,
+                        xpReward: 280,
+                        creditReward: 550,
+                        type: 'social',
+                        chapter: 3,
+                        unlocked: false,
+                        requireLevel: 7
+                    },
+                    {
+                        id: 'phishing_advanced',
+                        title: 'Advanced Phishing',
+                        icon: '🎯',
+                        description: 'Handle sophisticated phishing attempts',
+                        difficulty: 3,
+                        xpReward: 300,
+                        creditReward: 600,
+                        type: 'phishing',
+                        chapter: 3,
+                        unlocked: false,
+                        requireLevel: 8
+                    },
+                    // Chapter 4: Malware & Code
+                    {
+                        id: 'malware_analysis',
+                        title: 'Malware Analysis',
+                        icon: '🦠',
+                        description: 'Identify and analyze malicious code',
+                        difficulty: 4,
+                        xpReward: 350,
+                        creditReward: 700,
+                        type: 'code',
+                        chapter: 4,
+                        unlocked: false,
+                        requireLevel: 10
+                    },
+                    {
+                        id: 'sql_injection',
+                        title: 'SQL Injection Defense',
+                        icon: '💉',
+                        description: 'Prevent SQL injection attacks',
+                        difficulty: 4,
+                        xpReward: 380,
+                        creditReward: 750,
+                        type: 'code',
+                        chapter: 4,
+                        unlocked: false,
+                        requireLevel: 12
+                    },
+                    {
+                        id: 'xss_prevention',
+                        title: 'XSS Prevention',
+                        icon: '⚠️',
+                        description: 'Stop cross-site scripting attacks',
+                        difficulty: 4,
+                        xpReward: 400,
+                        creditReward: 800,
+                        type: 'code',
+                        chapter: 4,
+                        unlocked: false,
+                        requireLevel: 14
+                    },
+                    // Chapter 5: Cryptography
+                    {
+                        id: 'encryption_basics',
+                        title: 'Encryption Fundamentals',
+                        icon: '🔑',
+                        description: 'Learn basic encryption techniques',
+                        difficulty: 5,
+                        xpReward: 450,
+                        creditReward: 900,
+                        type: 'encryption',
+                        chapter: 5,
+                        unlocked: false,
+                        requireLevel: 15
+                    },
+                    {
+                        id: 'hash_functions',
+                        title: 'Hash Functions',
+                        icon: '#️⃣',
+                        description: 'Understand and implement hash functions',
+                        difficulty: 5,
+                        xpReward: 480,
+                        creditReward: 950,
+                        type: 'encryption',
+                        chapter: 5,
+                        unlocked: false,
+                        requireLevel: 18
+                    },
+                    {
+                        id: 'public_key',
+                        title: 'Public Key Cryptography',
+                        icon: '🗝️',
+                        description: 'Master asymmetric encryption',
+                        difficulty: 5,
+                        xpReward: 500,
+                        creditReward: 1000,
+                        type: 'encryption',
+                        chapter: 5,
+                        unlocked: false,
+                        requireLevel: 20
+                    },
+                    // Boss Battles
+                    {
+                        id: 'boss_chapter1',
+                        title: 'Boss: Script Kiddie',
+                        icon: '👾',
+                        description: 'Face your first cyber adversary',
+                        difficulty: 2,
+                        xpReward: 500,
+                        creditReward: 1000,
+                        type: 'boss',
+                        chapter: 1,
+                        unlocked: false,
+                        requireLevel: 5,
+                        isBoss: true
+                    },
+                    {
+                        id: 'boss_chapter3',
+                        title: 'Boss: Social Engineer',
+                        icon: '🦹',
+                        description: 'Defeat the master manipulator',
+                        difficulty: 4,
+                        xpReward: 800,
+                        creditReward: 1500,
+                        type: 'boss',
+                        chapter: 3,
+                        unlocked: false,
+                        requireLevel: 10,
+                        isBoss: true
+                    },
+                    {
+                        id: 'boss_final',
+                        title: 'Final Boss: Cyber Overlord',
+                        icon: '👹',
+                        description: 'The ultimate cybersecurity challenge',
+                        difficulty: 5,
+                        xpReward: 1500,
+                        creditReward: 3000,
+                        type: 'boss',
+                        chapter: 5,
+                        unlocked: false,
+                        requireLevel: 25,
+                        isBoss: true
+                    }
+                ];
+            }
+
+            createShopItemsData() {
+                return {
+                    avatars: [
+                        { id: 'avatar_shield', name: 'Shield', icon: '🛡️', price: 0, owned: true, category: 'avatar' },
+                        { id: 'avatar_lock', name: 'Lock', icon: '🔒', price: 500, owned: false, category: 'avatar' },
+                        { id: 'avatar_key', name: 'Key', icon: '🔑', price: 500, owned: false, category: 'avatar' },
+                        { id: 'avatar_eye', name: 'Watcher', icon: '👁️', price: 750, owned: false, category: 'avatar' },
+                        { id: 'avatar_robot', name: 'AI Bot', icon: '🤖', price: 1000, owned: false, category: 'avatar' },
+                        { id: 'avatar_ninja', name: 'Cyber Ninja', icon: '🥷', price: 1500, owned: false, category: 'avatar' },
+                        { id: 'avatar_wizard', name: 'Tech Wizard', icon: '🧙', price: 2000, owned: false, category: 'avatar' },
+                        { id: 'avatar_alien', name: 'Alien Tech', icon: '👽', price: 2500, owned: false, category: 'avatar' }
+                    ],
+                    boosts: [
+                        { id: 'xp_boost_10', name: 'XP Boost +10%', icon: '⚡', price: 1000, owned: false, category: 'boost', effect: 'xp', value: 1.1 },
+                        { id: 'xp_boost_25', name: 'XP Boost +25%', icon: '⚡', price: 2500, owned: false, category: 'boost', effect: 'xp', value: 1.25 },
+                        { id: 'credit_boost_10', name: 'Credit Boost +10%', icon: '💰', price: 1000, owned: false, category: 'boost', effect: 'credits', value: 1.1 },
+                        { id: 'credit_boost_25', name: 'Credit Boost +25%', icon: '💰', price: 2500, owned: false, category: 'boost', effect: 'credits', value: 1.25 },
+                        { id: 'combo_boost', name: 'Combo Master', icon: '🔥', price: 3000, owned: false, category: 'boost', effect: 'combo', value: 2 },
+                        { id: 'shield_boost', name: 'Error Shield', icon: '🛡️', price: 2000, owned: false, category: 'boost', effect: 'shield', value: 1 },
+                        { id: 'time_boost', name: 'Time Dilator', icon: '⏱️', price: 1500, owned: false, category: 'boost', effect: 'time', value: 1.5 },
+                        { id: 'hint_boost', name: 'Hint Master', icon: '💡', price: 1200, owned: false, category: 'boost', effect: 'hints', value: 3 }
+                    ],
+                    themes: [
+                        { id: 'theme_cyan', name: 'Cyan Matrix', icon: '🔵', price: 0, owned: true, category: 'theme', color: '#00d4ff' },
+                        { id: 'theme_purple', name: 'Purple Haze', icon: '🟣', price: 800, owned: false, category: 'theme', color: '#ff00ff' },
+                        { id: 'theme_green', name: 'Green Terminal', icon: '🟢', price: 800, owned: false, category: 'theme', color: '#00ff88' },
+                        { id: 'theme_red', name: 'Red Alert', icon: '🔴', price: 800, owned: false, category: 'theme', color: '#ff0055' },
+                        { id: 'theme_gold', name: 'Golden Elite', icon: '🟡', price: 1500, owned: false, category: 'theme', color: '#ffaa00' },
+                        { id: 'theme_rainbow', name: 'RGB Master', icon: '🌈', price: 3000, owned: false, category: 'theme', color: 'rainbow' }
+                    ],
+                    frames: [
+                        { id: 'frame_default', name: 'Standard', icon: '⭕', price: 0, owned: true, category: 'frame', style: 'default' },
+                        { id: 'frame_electric', name: 'Electric', icon: '⚡', price: 1000, owned: false, category: 'frame', style: 'electric' },
+                        { id: 'frame_fire', name: 'Fire', icon: '🔥', price: 1200, owned: false, category: 'frame', style: 'fire' },
+                        { id: 'frame_ice', name: 'Ice', icon: '❄️', price: 1200, owned: false, category: 'frame', style: 'ice' },
+                        { id: 'frame_matrix', name: 'Matrix', icon: '🌐', price: 1800, owned: false, category: 'frame', style: 'matrix' },
+                        { id: 'frame_glitch', name: 'Glitch', icon: '📡', price: 2000, owned: false, category: 'frame', style: 'glitch' }
+                    ]
+                };
+            }
+
+            init() {
+                this.loadGameData();
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                }, 2000);
+                
+                document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+                
+                // Auto-save every 30 seconds
+                setInterval(() => this.saveGameData(), 30000);
+            }
+
+            // Screen Management
+            showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                document.getElementById(screenId).classList.add('active');
+                this.currentScreen = screenId;
+            }
+
+            startCampaign() {
+                this.showScreen('campaignScreen');
+                this.loadMissions();
+                this.updateHUD();
+            }
+
+            continueGame() {
+                if (this.player.statistics.missionsCompleted > 0) {
+                    this.startCampaign();
+                } else {
+                    this.showNotification('No Save Found', 'Start a new campaign to begin your journey!');
+                }
+            }
+
+            returnToMenu() {
+                this.showScreen('mainMenuScreen');
+            }
+
+            // Mission Management
+            loadMissions() {
+                const grid = document.getElementById('missionGrid');
+                grid.innerHTML = '';
+                
+                // Group missions by chapter
+                const chapters = {};
+                this.missions.forEach(mission => {
+                    if (!chapters[mission.chapter]) {
+                        chapters[mission.chapter] = [];
+                    }
+                    chapters[mission.chapter].push(mission);
+                });
+                
+                // Display missions
+                Object.keys(chapters).forEach(chapter => {
+                    const chapterMissions = chapters[chapter];
+                    
+                    chapterMissions.forEach(mission => {
+                        const isCompleted = this.player.completedMissions.includes(mission.id);
+                        const replays = this.player.missionReplays[mission.id] || 0;
+                        const canUnlock = this.canUnlockMission(mission);
+                        const isLocked = !mission.unlocked && !canUnlock;
+                        
+                        const card = document.createElement('div');
+                        card.className = `mission-card ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
+                        
+                        if (replays > 0 && !mission.isBoss) {
+                            const indicator = document.createElement('div');
+                            indicator.className = 'replay-indicator';
+                            indicator.textContent = `Replayed ${replays}x`;
+                            card.appendChild(indicator);
+                        }
+                        
+                        card.innerHTML += `
+                            <div class="mission-icon">${mission.icon}</div>
+                            <h3 class="mission-title">${mission.title}</h3>
+                            <p class="mission-description">${mission.description}</p>
+                            <div class="mission-difficulty">
+                                ${this.getDifficultyStars(mission.difficulty)}
+                            </div>
+                            <div class="mission-rewards">
+                                <span>🏆 ${this.calculateMissionXP(mission)} XP</span>
+                                <span>💰 ${this.calculateMissionCredits(mission)} Credits</span>
+                            </div>
+                            ${isCompleted && !mission.isBoss ? '<div style="color: var(--success-color); margin-top: 1rem;">✅ COMPLETED - Replay for 50% rewards</div>' : ''}
+                            ${isLocked ? `<div style="color: var(--danger-color); margin-top: 1rem;">🔒 Requires Level ${mission.requireLevel || mission.difficulty * 3}</div>` : ''}
+                        `;
+                        
+                        if (!isLocked) {
+                            card.onclick = () => this.startMission(mission);
+                        }
+                        
+                        grid.appendChild(card);
+                    });
+                });
+            }
+
+            calculateMissionXP(mission) {
+                let xp = mission.xpReward;
+                const isCompleted = this.player.completedMissions.includes(mission.id);
+                
+                if (isCompleted && !mission.isBoss) {
+                    xp = Math.floor(xp * 0.5); // 50% XP on replay
+                }
+                
+                // Apply boosts
+                if (this.hasBoost('xp')) {
+                    const boost = this.getActiveBoost('xp');
+                    xp = Math.floor(xp * boost.value);
+                }
+                
+                return xp;
+            }
+
+            calculateMissionCredits(mission) {
+                let credits = mission.creditReward;
+                const isCompleted = this.player.completedMissions.includes(mission.id);
+                
+                if (isCompleted && !mission.isBoss) {
+                    credits = Math.floor(credits * 0.5); // 50% credits on replay
+                }
+                
+                // Apply boosts
+                if (this.hasBoost('credits')) {
+                    const boost = this.getActiveBoost('credits');
+                    credits = Math.floor(credits * boost.value);
+                }
+                
+                return credits;
+            }
+
+            canUnlockMission(mission) {
+                if (mission.unlocked) return true;
+                
+                const requiredLevel = mission.requireLevel || mission.difficulty * 3;
+                if (this.player.level >= requiredLevel) {
+                    mission.unlocked = true;
+                    return true;
+                }
+                
+                return false;
+            }
+
+            getDifficultyStars(difficulty) {
+                let stars = '';
+                for (let i = 0; i < 5; i++) {
+                    stars += `<span class="difficulty-star">${i < difficulty ? '⭐' : '☆'}</span>`;
+                }
+                return stars;
+            }
+
+            startMission(mission) {
+                this.player.currentMission = mission;
+                this.showScreen('challengeScreen');
+                document.getElementById('currentMission').textContent = mission.title;
+                document.getElementById('challengeTitle').textContent = mission.title;
+                document.getElementById('challengeDescription').textContent = mission.description;
+                
+                this.challengeStartTime = Date.now();
+                this.challengeScore = 0;
+                this.startChallengeTimer();
+                
+                // Load appropriate challenge
+                switch(mission.type) {
+                    case 'phishing':
+                        this.loadPhishingChallenge();
+                        break;
+                    case 'password':
+                        this.loadPasswordChallenge();
+                        break;
+                    case 'network':
+                        this.loadNetworkDefense();
+                        break;
+                    case 'social':
+                        this.loadSocialEngineering();
+                        break;
+                    case 'code':
+                        this.loadCodeAnalysis();
+                        break;
+                    case 'encryption':
+                        this.loadEncryptionChallenge();
+                        break;
+                    case 'typing':
+                        this.loadTypingChallenge();
+                        break;
+                    case 'firewall':
+                        this.loadFirewallPuzzle();
+                        break;
+                    case 'memory':
+                        this.loadMemoryGame();
+                        break;
+                    case 'boss':
+                        this.loadBossBattle();
+                        break;
+                }
+            }
+
+            // Challenge Types
+            loadPhishingChallenge() {
+                const emails = [
+                    {
+                        from: 'security@amaz0n.com',
+                        subject: '⚠️ Urgent: Account Security Alert',
+                        body: 'Your Amazon account has been compromised. Click here immediately to secure it: http://amaz0n-security.tk/verify',
+                        isPhishing: true,
+                        indicators: ['Misspelled domain (amaz0n)', 'Urgent language', 'Suspicious .tk domain']
+                    },
+                    {
+                        from: 'noreply@paypal.com',
+                        subject: 'Receipt for your payment',
+                        body: 'You sent a payment of $499.99 USD to John Smith. Transaction ID: 7H848484848. View details in your PayPal account.',
+                        isPhishing: false,
+                        indicators: ['Legitimate domain', 'No urgent action required', 'Professional formatting']
+                    },
+                    {
+                        from: 'admin@microsoft-support.net',
+                        subject: 'Your Microsoft 365 subscription expires today',
+                        body: 'Act now! Your subscription expires in 2 hours. Download our renewal tool: http://bit.ly/ms365renew',
+                        isPhishing: true,
+                        indicators: ['Fake Microsoft domain', 'Urgent deadline pressure', 'Shortened suspicious URL']
+                    }
+                ];
+                
+                const email = emails[Math.floor(Math.random() * emails.length)];
+                this.currentChallenge = { type: 'phishing', data: email };
+                
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="background: #000; border: 2px solid var(--success-color); border-radius: 10px; padding: 1.5rem; 
+                         font-family: 'Courier New', monospace; color: var(--success-color); margin: 1rem 0; position: relative;">
+                        <div style="position: absolute; top: 0; left: 0; background: var(--success-color); color: #000; 
+                             padding: 0.3rem 1rem; font-size: 0.8rem; font-weight: bold;">
+                            EMAIL ANALYSIS
+                        </div>
+                        <div style="margin-top: 2rem; white-space: pre-wrap; line-height: 1.6;">
+FROM: ${email.from}
+SUBJECT: ${email.subject}
+
+${email.body}
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Is this email legitimate or phishing?</h3>
+                        <div style="display: flex; gap: 2rem; justify-content: center;">
+                            <button class="cyber-btn" onclick="game.submitPhishingAnswer(false)" 
+                                    style="background: rgba(0, 255, 136, 0.2);">✅ LEGITIMATE</button>
+                            <button class="cyber-btn" onclick="game.submitPhishingAnswer(true)" 
+                                    style="background: rgba(255, 0, 85, 0.2);">⚠️ PHISHING</button>
+                        </div>
+                        ${this.hasBoost('hints') ? '<button class="cyber-btn" onclick="game.showHint()" style="margin-top: 1rem;">💡 Use Hint</button>' : ''}
+                    </div>
+                    <div id="challengeFeedback"></div>
+                `;
+            }
+
+            loadTypingChallenge() {
+                const protocols = [
+                    "IMPLEMENT TWO-FACTOR AUTHENTICATION IMMEDIATELY",
+                    "ENCRYPT ALL SENSITIVE DATA BEFORE TRANSMISSION",
+                    "VERIFY SSL CERTIFICATES ON ALL CONNECTIONS",
+                    "UPDATE FIREWALL RULES TO BLOCK SUSPICIOUS TRAFFIC",
+                    "INITIATE INCIDENT RESPONSE PROTOCOL ALPHA"
+                ];
+                
+                const text = protocols[Math.floor(Math.random() * protocols.length)];
+                this.currentChallenge = { 
+                    type: 'typing', 
+                    text: text,
+                    currentIndex: 0,
+                    errors: 0,
+                    startTime: Date.now()
+                };
+                
+                document.getElementById('challengeContent').innerHTML = `
+                    <div class="typing-game">
+                        <h3 style="color: var(--success-color); margin-bottom: 1rem;">Type the security protocol exactly:</h3>
+                        <div class="typing-text" id="typingText">
+                            ${text.split('').map((char, i) => `<span data-index="${i}">${char}</span>`).join('')}
+                        </div>
+                        <input type="text" id="typingInput" placeholder="Start typing here..." 
+                               style="width: 100%; padding: 1rem; background: #111; border: 2px solid var(--success-color); 
+                                      color: var(--success-color); font-family: 'Courier New', monospace; font-size: 1.2rem;"
+                               oninput="game.handleTyping()" autocomplete="off">
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; color: var(--success-color);">
+                            <div>Accuracy: <span id="typingAccuracy">100</span>%</div>
+                            <div>Speed: <span id="typingSpeed">0</span> WPM</div>
+                            <div>Errors: <span id="typingErrors">0</span></div>
+                        </div>
+                    </div>
+                    <div id="challengeFeedback"></div>
+                `;
+                
+                document.getElementById('typingInput').focus();
+            }
+
+            loadFirewallPuzzle() {
+                const gridSize = 36; // 6x6 grid
+                this.currentChallenge = {
+                    type: 'firewall',
+                    grid: Array(gridSize).fill(false),
+                    connections: [],
+                    startNode: Math.floor(Math.random() * 6),
+                    endNode: 30 + Math.floor(Math.random() * 6),
+                    moves: 0
+                };
+                
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="text-align: center;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Connect the Firewall Nodes</h3>
+                        <p style="color: var(--dim-text); margin-bottom: 1rem;">
+                            Create a secure path from the entry point (🟢) to the exit point (🔴)
+                        </p>
+                        <div class="firewall-puzzle" id="firewallPuzzle">
+                            ${Array(gridSize).fill('').map((_, i) => {
+                                let content = '🔲';
+                                if (i === this.currentChallenge.startNode) content = '🟢';
+                                else if (i === this.currentChallenge.endNode) content = '🔴';
+                                
+                                return `<div class="puzzle-node" data-index="${i}" onclick="game.toggleNode(${i})">${content}</div>`;
+                            }).join('')}
+                        </div>
+                        <div style="margin-top: 1rem;">Moves: <span id="puzzleMoves">0</span></div>
+                        <button class="cyber-btn" onclick="game.checkFirewallPath()" style="margin-top: 1rem;">Verify Path</button>
+                    </div>
+                    <div id="challengeFeedback"></div>
+                `;
+            }
+
+            loadMemoryGame() {
+                const icons = ['🔐', '🛡️', '🔑', '🔒', '🎯', '🦠', '💉', '⚠️'];
+                const cards = [...icons, ...icons].sort(() => Math.random() - 0.5);
+                
+                this.currentChallenge = {
+                    type: 'memory',
+                    cards: cards,
+                    flipped: [],
+                    matched: [],
+                    moves: 0,
+                    startTime: Date.now()
+                };
+                
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="text-align: center;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Port Security Memory Match</h3>
+                        <p style="color: var(--dim-text);">Match the security protocols - remember port configurations!</p>
+                        <div class="memory-game" id="memoryGame">
+                            ${cards.map((card, i) => `
+                                <div class="memory-card" data-index="${i}" onclick="game.flipCard(${i})">
+                                    <span style="display: none;">${card}</span>
+                                    <span class="card-back">?</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="margin-top: 1rem;">Moves: <span id="memoryMoves">0</span> | Matches: <span id="memoryMatches">0</span>/8</div>
+                    </div>
+                    <div id="challengeFeedback"></div>
+                `;
+            }
+
+            loadPasswordChallenge() {
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="background: var(--card-bg); padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Create a Secure Password</h3>
+                        <ul style="color: var(--dim-text); line-height: 2;">
+                            <li>Minimum 12 characters</li>
+                            <li>Include uppercase and lowercase letters</li>
+                            <li>Include numbers and special characters</li>
+                            <li>Avoid common patterns and dictionary words</li>
+                        </ul>
+                    </div>
+                    <input type="password" id="passwordInput" placeholder="Enter your secure password..." 
+                           style="width: 100%; padding: 1rem; background: var(--card-bg); border: 2px solid var(--border-color); 
+                                  color: white; font-size: 1.1rem; border-radius: 10px;"
+                           oninput="game.analyzePassword()">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2rem 0;">
+                        <div style="background: var(--card-bg); padding: 1rem; border-radius: 10px; text-align: center;">
+                            <div style="color: var(--dim-text); margin-bottom: 0.5rem;">Length</div>
+                            <div style="color: var(--primary-color); font-size: 1.5rem;" id="passLength">0</div>
+                        </div>
+                        <div style="background: var(--card-bg); padding: 1rem; border-radius: 10px; text-align: center;">
+                            <div style="color: var(--dim-text); margin-bottom: 0.5rem;">Strength</div>
+                            <div style="color: var(--primary-color); font-size: 1.5rem;" id="passStrength">--</div>
+                        </div>
+                        <div style="background: var(--card-bg); padding: 1rem; border-radius: 10px; text-align: center;">
+                            <div style="color: var(--dim-text); margin-bottom: 0.5rem;">Entropy</div>
+                            <div style="color: var(--primary-color); font-size: 1.5rem;" id="passEntropy">0</div>
+                        </div>
+                        <div style="background: var(--card-bg); padding: 1rem; border-radius: 10px; text-align: center;">
+                            <div style="color: var(--dim-text); margin-bottom: 0.5rem;">Score</div>
+                            <div style="color: var(--primary-color); font-size: 1.5rem;" id="passScore">0/100</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="cyber-btn" onclick="game.submitPassword()">SUBMIT PASSWORD</button>
+                    </div>
+                    <div id="challengeFeedback"></div>
+                `;
+            }
+
+            loadNetworkDefense() {
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <h3 style="color: var(--primary-color);">Network Defense Simulation</h3>
+                        <p style="color: var(--dim-text);">Click threats to neutralize them before they breach!</p>
+                    </div>
+                    <div style="width: 100%; height: 500px; background: linear-gradient(180deg, #001122 0%, #003366 100%);
+                         border: 3px solid var(--primary-color); border-radius: 15px; position: relative; overflow: hidden; cursor: crosshair;"
+                         id="networkGame">
+                    </div>
+                    <div style="display: flex; justify-content: space-around; margin-top: 1rem;">
+                        <div>Health: <span id="networkHealth" style="color: var(--success-color);">100</span></div>
+                        <div>Threats: <span id="threatsNeutralized" style="color: var(--warning-color);">0</span></div>
+                        <div>Wave: <span id="waveNumber" style="color: var(--primary-color);">1</span></div>
+                    </div>
+                    <div id="challengeFeedback"></div>
+                `;
+                
+                this.startNetworkDefense();
+            }
+
+            loadSocialEngineering() {
+                const scenarios = [
+                    {
+                        scenario: "A person claiming to be from IT calls and says they need your password to fix a critical system issue.",
+                        responses: [
+                            "Give them the password since it's urgent",
+                            "Ask for their employee ID and callback number, then verify with IT",
+                            "Give them a fake password to test them",
+                            "Hang up immediately"
+                        ],
+                        correct: 1,
+                        explanation: "Always verify through official channels. Real IT never asks for passwords."
+                    }
+                ];
+                
+                const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+                this.currentChallenge = { type: 'social', data: scenario };
+                
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 15px; 
+                         height: 400px; display: flex; flex-direction: column;">
+                        <div style="padding: 1rem; background: rgba(0, 212, 255, 0.1); border-bottom: 1px solid var(--border-color);
+                             display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; 
+                                 background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                                 display: flex; justify-content: center; align-items: center; font-size: 20px;">👤</div>
+                            <div>
+                                <div style="font-weight: bold;">Unknown Contact</div>
+                                <div style="font-size: 0.9rem; color: var(--dim-text);">Active now</div>
+                            </div>
+                        </div>
+                        <div style="flex: 1; padding: 1rem; overflow-y: auto;">
+                            <div style="max-width: 70%; padding: 0.8rem 1.2rem; border-radius: 15px;
+                                 background: rgba(255, 0, 255, 0.1); border: 1px solid var(--secondary-color);">
+                                ${scenario.scenario}
+                            </div>
+                        </div>
+                        <div style="padding: 1rem; border-top: 1px solid var(--border-color); display: flex; gap: 1rem;">
+                            ${scenario.responses.map((response, index) => `
+                                <button style="flex: 1; padding: 0.8rem; background: rgba(0, 212, 255, 0.1); 
+                                        border: 1px solid var(--border-color); color: var(--light-text); 
+                                        cursor: pointer; transition: all 0.3s ease; text-align: center;"
+                                        onmouseover="this.style.background='rgba(0, 212, 255, 0.2)'"
+                                        onmouseout="this.style.background='rgba(0, 212, 255, 0.1)'"
+                                        onclick="game.submitSocialAnswer(${index})">${response}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div id="challengeFeedback"></div>
+                `;
+            }
+
+            loadCodeAnalysis() {
+                const code = `function authenticateUser(username, password) {
+    var query = "SELECT * FROM users WHERE username = '" + username + 
+                "' AND password = '" + password + "'";
+    
+    if (executeQuery(query).length > 0) {
+        return true;
+    }
+    return false;
+}`;
+                
+                this.currentChallenge = { 
+                    type: 'code', 
+                    vulnerableLines: [1, 2],
+                    selectedLines: [],
+                    totalLines: 7
+                };
+                
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <h3 style="color: var(--primary-color);">Code Security Analysis</h3>
+                        <p style="color: var(--dim-text);">Click on lines containing security vulnerabilities</p>
+                    </div>
+                    <div style="background: #1e1e1e; border: 2px solid var(--primary-color); border-radius: 10px; 
+                         padding: 1.5rem; font-family: 'Courier New', monospace;">
+                        ${code.split('\n').map((line, index) => `
+                            <div style="padding: 0.5rem; margin: 0.2rem 0; border-radius: 5px; cursor: pointer; 
+                                 transition: all 0.3s ease; display: flex; align-items: center;"
+                                 onclick="game.checkCodeLine(${index})" data-line="${index}">
+                                <span style="color: var(--dim-text); margin-right: 1rem; min-width: 30px;">${index + 1}</span>
+                                <span style="flex: 1; color: #d4d4d4;">${this.escapeHtml(line)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="cyber-btn" onclick="game.submitCodeAnalysis()" style="margin-top: 1rem;">SUBMIT ANALYSIS</button>
+                    <div id="challengeFeedback"></div>
+                `;
+            }
+
+            loadEncryptionChallenge() {
+                const plaintext = "SECURE THIS MESSAGE";
+                const shift = Math.floor(Math.random() * 25) + 1;
+                const encrypted = this.caesarCipher(plaintext, shift);
+                
+                this.currentChallenge = { type: 'encryption', answer: plaintext, shift: shift };
+                
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="background: #000; border: 2px solid var(--success-color); border-radius: 10px; 
+                         padding: 1.5rem; font-family: 'Courier New', monospace; margin-bottom: 2rem;">
+                        <div style="color: var(--success-color);">
+ENCRYPTION CHALLENGE
+====================
+Encrypted Message: ${encrypted}
+Encryption Type: Caesar Cipher
+                        </div>
+                    </div>
+                    <input type="text" id="decryptInput" placeholder="Enter decrypted message..." 
+                           style="width: 100%; padding: 1rem; background: var(--card-bg); border: 2px solid var(--border-color); 
+                                  color: white; font-size: 1.1rem; border-radius: 10px; text-transform: uppercase;">
+                    <button class="cyber-btn" onclick="game.submitDecryption()" style="margin-top: 1rem;">SUBMIT DECRYPTION</button>
+                    <div id="challengeFeedback"></div>
+                `;
+            }
+
+            loadBossBattle() {
+                this.currentChallenge = { 
+                    type: 'boss', 
+                    health: 100, 
+                    playerHealth: 100,
+                    stage: 1,
+                    totalStages: 5
+                };
+                
+                document.getElementById('challengeContent').innerHTML = `
+                    <div style="text-align: center;">
+                        <h2 style="color: var(--danger-color);">BOSS BATTLE</h2>
+                        <div style="display: flex; justify-content: space-between; margin: 2rem 0;">
+                            <div>
+                                <div>Your Health</div>
+                                <div class="xp-bar" style="width: 200px;">
+                                    <div class="xp-fill" id="playerHealthBar" style="width: 100%; background: var(--success-color);"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div>Boss Health</div>
+                                <div class="xp-bar" style="width: 200px;">
+                                    <div class="xp-fill" id="bossHealthBar" style="width: 100%; background: var(--danger-color);"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="bossStage">Loading...</div>
+                    </div>
+                    <div id="challengeFeedback"></div>
+                `;
+                
+                this.nextBossStage();
+            }
+
+            // Challenge Handlers
+            submitPhishingAnswer(isPhishing) {
+                const correct = this.currentChallenge.data.isPhishing === isPhishing;
+                this.showChallengeFeedback(correct, this.currentChallenge.data.indicators.join(', '));
+                
+                if (correct) {
+                    this.completeChallenge();
+                }
+            }
+
+            handleTyping() {
+                const input = document.getElementById('typingInput').value;
+                const challenge = this.currentChallenge;
+                const text = challenge.text;
+                
+                // Update display
+                const spans = document.querySelectorAll('.typing-text span');
+                for (let i = 0; i < text.length; i++) {
+                    if (i < input.length) {
+                        if (input[i] === text[i]) {
+                            spans[i].className = 'correct';
+                        } else {
+                            spans[i].className = 'incorrect';
+                            challenge.errors++;
+                        }
+                    } else if (i === input.length) {
+                        spans[i].className = 'current';
+                    } else {
+                        spans[i].className = '';
+                    }
+                }
+                
+                // Calculate stats
+                const elapsed = (Date.now() - challenge.startTime) / 1000 / 60;
+                const words = input.length / 5;
+                const wpm = Math.round(words / elapsed);
+                const accuracy = Math.round((1 - challenge.errors / Math.max(input.length, 1)) * 100);
+                
+                document.getElementById('typingSpeed').textContent = wpm;
+                document.getElementById('typingAccuracy').textContent = accuracy;
+                document.getElementById('typingErrors').textContent = challenge.errors;
+                
+                // Check completion
+                if (input === text) {
+                    this.showChallengeFeedback(true, `Completed! WPM: ${wpm}, Accuracy: ${accuracy}%`);
+                    this.completeChallenge();
+                }
+            }
+
+            toggleNode(index) {
+                const challenge = this.currentChallenge;
+                const node = document.querySelector(`[data-index="${index}"]`);
+                
+                if (index === challenge.startNode || index === challenge.endNode) return;
+                
+                challenge.grid[index] = !challenge.grid[index];
+                challenge.moves++;
+                
+                if (challenge.grid[index]) {
+                    node.classList.add('active');
+                    node.textContent = '🟦';
+                } else {
+                    node.classList.remove('active');
+                    node.textContent = '🔲';
+                }
+                
+                document.getElementById('puzzleMoves').textContent = challenge.moves;
+            }
+
+            checkFirewallPath() {
+                // Simple path validation
+                const challenge = this.currentChallenge;
+                const hasPath = challenge.grid.filter(n => n).length >= 4;
+                
+                if (hasPath) {
+                    this.showChallengeFeedback(true, 'Firewall configured successfully!');
+                    this.completeChallenge();
+                } else {
+                    this.showChallengeFeedback(false, 'Path incomplete. Connect more nodes!');
+                }
+            }
+
+            flipCard(index) {
+                const challenge = this.currentChallenge;
+                if (challenge.flipped.length >= 2) return;
+                if (challenge.matched.includes(index)) return;
+                if (challenge.flipped.includes(index)) return;
+                
+                challenge.flipped.push(index);
+                const card = document.querySelector(`[data-index="${index}"]`);
+                card.classList.add('flipped');
+                card.querySelector('.card-back').style.display = 'none';
+                card.querySelector('span:first-child').style.display = 'block';
+                
+                if (challenge.flipped.length === 2) {
+                    challenge.moves++;
+                    document.getElementById('memoryMoves').textContent = challenge.moves;
+                    
+                    setTimeout(() => this.checkMemoryMatch(), 1000);
+                }
+            }
+
+            checkMemoryMatch() {
+                const challenge = this.currentChallenge;
+                const [first, second] = challenge.flipped;
+                
+                if (challenge.cards[first] === challenge.cards[second]) {
+                    challenge.matched.push(first, second);
+                    document.querySelectorAll(`[data-index="${first}"], [data-index="${second}"]`).forEach(card => {
+                        card.classList.add('matched');
+                    });
+                    document.getElementById('memoryMatches').textContent = challenge.matched.length / 2;
+                    
+                    if (challenge.matched.length === challenge.cards.length) {
+                        this.showChallengeFeedback(true, `Completed in ${challenge.moves} moves!`);
+                        this.completeChallenge();
+                    }
+                } else {
+                    document.querySelectorAll(`[data-index="${first}"], [data-index="${second}"]`).forEach(card => {
+                        card.classList.remove('flipped');
+                        card.querySelector('.card-back').style.display = 'block';
+                        card.querySelector('span:first-child').style.display = 'none';
+                    });
+                }
+                
+                challenge.flipped = [];
+            }
+
+            analyzePassword() {
+                const password = document.getElementById('passwordInput').value;
+                const length = password.length;
+                const hasUpper = /[A-Z]/.test(password);
+                const hasLower = /[a-z]/.test(password);
+                const hasNumber = /\d/.test(password);
+                const hasSpecial = /[^A-Za-z0-9]/.test(password);
+                
+                let score = 0;
+                if (length >= 12) score += 25;
+                if (hasUpper) score += 15;
+                if (hasLower) score += 15;
+                if (hasNumber) score += 20;
+                if (hasSpecial) score += 25;
+                
+                const entropy = Math.floor(length * Math.log2(94));
+                
+                let strength = 'Weak';
+                let strengthColor = 'var(--danger-color)';
+                if (score >= 80) {
+                    strength = 'Strong';
+                    strengthColor = 'var(--success-color)';
+                } else if (score >= 50) {
+                    strength = 'Medium';
+                    strengthColor = 'var(--warning-color)';
+                }
+                
+                document.getElementById('passLength').textContent = length;
+                document.getElementById('passStrength').textContent = strength;
+                document.getElementById('passStrength').style.color = strengthColor;
+                document.getElementById('passEntropy').textContent = entropy;
+                document.getElementById('passScore').textContent = score + '/100';
+                
+                return score;
+            }
+
+            submitPassword() {
+                const score = this.analyzePassword();
+                
+                if (score >= 70) {
+                    this.showChallengeFeedback(true, 'Excellent password strength!');
+                    this.completeChallenge();
+                } else {
+                    this.showChallengeFeedback(false, 'Password needs to be stronger. Review the requirements.');
+                }
+            }
+
+            startNetworkDefense() {
+                this.networkGame = {
+                    health: 100,
+                    threatsNeutralized: 0,
+                    wave: 1,
+                    active: true
+                };
+                
+                const spawnThreat = () => {
+                    if (!this.networkGame || !this.networkGame.active) return;
+                    
+                    const gameArea = document.getElementById('networkGame');
+                    if (!gameArea) return;
+                    
+                    const threat = document.createElement('div');
+                    threat.style.position = 'absolute';
+                    threat.style.width = '60px';
+                    threat.style.height = '60px';
+                    threat.style.borderRadius = '50%';
+                    threat.style.background = 'radial-gradient(circle, var(--danger-color), transparent)';
+                    threat.style.border = '2px solid var(--danger-color)';
+                    threat.style.display = 'flex';
+                    threat.style.justifyContent = 'center';
+                    threat.style.alignItems = 'center';
+                    threat.style.fontSize = '30px';
+                    threat.style.cursor = 'pointer';
+                    threat.style.left = Math.random() * (gameArea.offsetWidth - 60) + 'px';
+                    threat.style.top = Math.random() * (gameArea.offsetHeight - 60) + 'px';
+                    threat.textContent = '🦠';
+                    threat.onclick = () => this.neutralizeThreat(threat);
+                    
+                    gameArea.appendChild(threat);
+                    
+                    setTimeout(() => {
+                        if (threat.parentElement) {
+                            threat.remove();
+                            this.networkGame.health -= 10;
+                            document.getElementById('networkHealth').textContent = this.networkGame.health;
+                            
+                            if (this.networkGame.health <= 0) {
+                                this.endNetworkDefense(false);
+                            }
+                        }
+                    }, 3000 - (this.networkGame.wave * 200));
+                    
+                    if (this.networkGame.threatsNeutralized < 20 && this.networkGame.active) {
+                        setTimeout(spawnThreat, 2000 - (this.networkGame.wave * 100));
+                    } else if (this.networkGame.active) {
+                        this.endNetworkDefense(true);
+                    }
+                };
+                
+                spawnThreat();
+            }
+
+            neutralizeThreat(threat) {
+                threat.remove();
+                this.networkGame.threatsNeutralized++;
+                document.getElementById('threatsNeutralized').textContent = this.networkGame.threatsNeutralized;
+                
+                if (this.networkGame.threatsNeutralized % 5 === 0) {
+                    this.networkGame.wave++;
+                    document.getElementById('waveNumber').textContent = this.networkGame.wave;
+                }
+                
+                this.challengeScore += 10;
+                document.getElementById('challengeScore').textContent = this.challengeScore;
+            }
+
+            endNetworkDefense(success) {
+                this.networkGame.active = false;
+                
+                if (success) {
+                    this.showChallengeFeedback(true, 'Network successfully defended!');
+                    this.completeChallenge();
+                } else {
+                    this.showChallengeFeedback(false, 'Network breached. Try again!');
+                }
+            }
+
+            submitSocialAnswer(index) {
+                const correct = index === this.currentChallenge.data.correct;
+                this.showChallengeFeedback(correct, this.currentChallenge.data.explanation);
+                
+                if (correct) {
+                    this.completeChallenge();
+                }
+            }
+
+            checkCodeLine(lineIndex) {
+                if (!this.currentChallenge.selectedLines) {
+                    this.currentChallenge.selectedLines = [];
+                }
+                
+                const lineElement = document.querySelector(`[data-line="${lineIndex}"]`);
+                
+                if (this.currentChallenge.selectedLines.includes(lineIndex)) {
+                    this.currentChallenge.selectedLines = this.currentChallenge.selectedLines.filter(l => l !== lineIndex);
+                    lineElement.style.background = '';
+                } else {
+                    this.currentChallenge.selectedLines.push(lineIndex);
+                    lineElement.style.background = 'rgba(255, 0, 85, 0.1)';
+                    lineElement.style.borderLeft = '3px solid var(--danger-color)';
+                }
+            }
+
+            submitCodeAnalysis() {
+                const correctLines = this.currentChallenge.vulnerableLines;
+                const selectedLines = this.currentChallenge.selectedLines || [];
+                
+                const correct = correctLines.every(line => selectedLines.includes(line)) &&
+                               selectedLines.every(line => correctLines.includes(line));
+                
+                if (correct) {
+                    this.showChallengeFeedback(true, 'All vulnerabilities identified! SQL injection detected.');
+                    this.completeChallenge();
+                } else {
+                    this.showChallengeFeedback(false, 'Review the code. Look for SQL injection vulnerabilities.');
+                }
+            }
+
+            submitDecryption() {
+                const answer = document.getElementById('decryptInput').value.toUpperCase();
+                const correct = answer === this.currentChallenge.answer;
+                
+                if (correct) {
+                    this.showChallengeFeedback(true, `Message decrypted! Caesar shift was ${this.currentChallenge.shift}.`);
+                    this.completeChallenge();
+                } else {
+                    this.showChallengeFeedback(false, 'Incorrect decryption. Try different shift values.');
+                }
+            }
+
+            nextBossStage() {
+                // Implement boss battle stages
+                const stage = this.currentChallenge.stage;
+                const stageContent = document.getElementById('bossStage');
+                
+                stageContent.innerHTML = `
+                    <h3>Stage ${stage}/5</h3>
+                    <p>Quick! Solve this challenge to damage the boss!</p>
+                    <div id="bossMinigame"></div>
+                `;
+                
+                // Load random mini-challenge
+                setTimeout(() => {
+                    this.currentChallenge.stage++;
+                    if (this.currentChallenge.stage > 5) {
+                        this.completeChallenge();
+                    }
+                }, 3000);
+            }
+
+            // Challenge Completion
+            completeChallenge() {
+                clearInterval(this.challengeTimer);
+                const mission = this.player.currentMission;
+                const timeBonus = Math.max(0, 300 - Math.floor((Date.now() - this.challengeStartTime) / 1000));
+                
+                // Track replays
+                if (!this.player.missionReplays[mission.id]) {
+                    this.player.missionReplays[mission.id] = 0;
+                }
+                
+                if (this.player.completedMissions.includes(mission.id)) {
+                    this.player.missionReplays[mission.id]++;
+                } else {
+                    this.player.completedMissions.push(mission.id);
+                }
+                
+                const xpReward = this.calculateMissionXP(mission) + timeBonus;
+                const creditReward = this.calculateMissionCredits(mission);
+                
+                this.player.xp += xpReward;
+                this.player.credits += creditReward;
+                this.player.score += xpReward * 10;
+                this.player.statistics.missionsCompleted++;
+                this.player.statistics.totalXpEarned += xpReward;
+                
+                this.checkLevelUp();
+                this.unlockNewMissions();
+                this.saveGameData();
+                
+                this.showCompletionModal(mission, xpReward, creditReward);
+            }
+
+            showCompletionModal(mission, xpReward, creditReward) {
+                this.showModal('Mission Complete!', `
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">${mission.icon}</div>
+                        <h2 style="color: var(--success-color); margin-bottom: 2rem;">${mission.title} Completed!</h2>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                            <div style="background: rgba(0, 212, 255, 0.1); padding: 1rem; border-radius: 10px;">
+                                <div style="color: var(--dim-text); margin-bottom: 0.5rem;">XP Earned</div>
+                                <div style="color: var(--primary-color); font-size: 1.5rem; font-weight: bold;">
+                                    ${xpReward}
+                                </div>
+                            </div>
+                            <div style="background: rgba(255, 170, 0, 0.1); padding: 1rem; border-radius: 10px;">
+                                <div style="color: var(--dim-text); margin-bottom: 0.5rem;">Credits Earned</div>
+                                <div style="color: var(--warning-color); font-size: 1.5rem; font-weight: bold;">
+                                    ${creditReward}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="cyber-btn" onclick="game.closeModal(); game.startCampaign();">Continue</button>
+                    </div>
+                `);
+            }
+
+            showChallengeFeedback(success, message) {
+                const feedback = document.getElementById('challengeFeedback');
+                feedback.innerHTML = `
+                    <div style="margin-top: 2rem; padding: 1.5rem; border-radius: 10px; 
+                         background: ${success ? 'rgba(0, 255, 136, 0.1)' : 'rgba(255, 0, 85, 0.1)'};
+                         border: 2px solid ${success ? 'var(--success-color)' : 'var(--danger-color)'};">
+                        <div style="font-size: 1.2rem; margin-bottom: 0.5rem; color: ${success ? 'var(--success-color)' : 'var(--danger-color)'};">
+                            ${success ? '✅ Correct!' : '❌ Incorrect'}
+                        </div>
+                        <div style="color: var(--dim-text);">${message}</div>
+                    </div>
+                `;
+            }
+
+            // Timer Management
+            startChallengeTimer() {
+                let seconds = 0;
+                this.challengeTimer = setInterval(() => {
+                    seconds++;
+                    const minutes = Math.floor(seconds / 60);
+                    const secs = seconds % 60;
+                    document.getElementById('challengeTime').textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+
+            pauseChallenge() {
+                clearInterval(this.challengeTimer);
+                this.showModal('Game Paused', `
+                    <div style="text-align: center;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 2rem;">Challenge Paused</h3>
+                        <button class="cyber-btn" onclick="game.closeModal(); game.resumeChallenge();">Resume</button>
+                        <button class="cyber-btn" onclick="game.exitChallenge();">Exit Challenge</button>
+                    </div>
+                `);
+            }
+
+            resumeChallenge() {
+                this.startChallengeTimer();
+            }
+
+            exitChallenge() {
+                clearInterval(this.challengeTimer);
+                this.closeModal();
+                this.startCampaign();
+            }
+
+            // Shop System
+            showShop() {
+                let shopHTML = `
+                    <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 2rem;">CYBER SHOP</h2>
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <span style="color: var(--warning-color); font-size: 1.2rem;">💰 Credits: ${this.player.credits}</span>
+                    </div>
+                    <div class="shop-tabs">
+                        <button class="shop-tab active" onclick="game.showShopCategory('avatars', this)">Avatars</button>
+                        <button class="shop-tab" onclick="game.showShopCategory('boosts', this)">Boosts</button>
+                        <button class="shop-tab" onclick="game.showShopCategory('themes', this)">Themes</button>
+                        <button class="shop-tab" onclick="game.showShopCategory('frames', this)">Frames</button>
+                    </div>
+                    <div class="shop-container">
+                        <div class="shop-items" id="shopItems">
+                `;
+                
+                // Default to avatars
+                shopHTML += this.generateShopItems('avatars');
+                shopHTML += '</div></div>';
+                
+                this.showModal('Cyber Shop', shopHTML);
+            }
+
+            showShopCategory(category, button) {
+                // Update active tab
+                document.querySelectorAll('.shop-tab').forEach(tab => tab.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update items
+                document.getElementById('shopItems').innerHTML = this.generateShopItems(category);
+            }
+
+            generateShopItems(category) {
+                let html = '';
+                const items = this.shopItems[category];
+                
+                items.forEach(item => {
+                    const owned = item.owned || this.player.inventory.includes(item.id);
+                    const equipped = this.isEquipped(item);
+                    const canAfford = this.player.credits >= item.price;
+                    
+                    html += `
+                        <div class="shop-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}">
+                            <div class="item-icon">${item.icon}</div>
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-stats">${this.getItemDescription(item)}</div>
+                            <div class="item-price">${owned ? 'OWNED' : `${item.price} Credits`}</div>
+                            ${owned && !equipped ? `<button class="cyber-btn" onclick="game.equipItem('${item.id}', '${category}')">Equip</button>` : ''}
+                            ${!owned ? `<button class="cyber-btn" ${canAfford ? '' : 'disabled'} 
+                                onclick="game.buyItem('${item.id}', '${category}', ${item.price})">
+                                ${canAfford ? 'Buy' : 'Not Enough Credits'}
+                            </button>` : ''}
+                        </div>
+                    `;
+                });
+                
+                return html;
+            }
+
+            getItemDescription(item) {
+                if (item.effect === 'xp') return `+${(item.value - 1) * 100}% XP from missions`;
+                if (item.effect === 'credits') return `+${(item.value - 1) * 100}% Credits from missions`;
+                if (item.effect === 'combo') return `Double combo multiplier`;
+                if (item.effect === 'shield') return `Ignore first wrong answer`;
+                if (item.effect === 'time') return `+50% time bonus`;
+                if (item.effect === 'hints') return `${item.value} hints per mission`;
+                if (item.category === 'theme') return `UI color theme`;
+                if (item.category === 'frame') return `Avatar frame style`;
+                if (item.category === 'avatar') return `Character avatar`;
+                return '';
+            }
+
+            buyItem(itemId, category, price) {
+                if (this.player.credits < price) return;
+                
+                this.player.credits -= price;
+                this.player.inventory.push(itemId);
+                
+                // Mark as owned
+                const item = this.shopItems[category].find(i => i.id === itemId);
+                if (item) item.owned = true;
+                
+                this.updateHUD();
+                this.saveGameData();
+                this.showNotification('Purchase Complete!', `You bought ${item.name}!`);
+                
+                // Refresh shop display
+                document.getElementById('shopItems').innerHTML = this.generateShopItems(category);
+            }
+
+            equipItem(itemId, category) {
+                const item = this.shopItems[category].find(i => i.id === itemId);
+                
+                if (category === 'avatars') {
+                    this.player.equipped.avatar = item.icon;
+                    this.player.character.avatar = item.icon;
+                } else if (category === 'themes') {
+                    this.player.equipped.theme = item.color;
+                    this.applyTheme(item.color);
+                } else if (category === 'frames') {
+                    this.player.equipped.frame = item.style;
+                } else if (category === 'boosts') {
+                    this.player.equipped.boost = item;
+                }
+                
+                this.saveGameData();
+                this.showNotification('Equipped!', `${item.name} is now equipped!`);
+                
+                // Refresh shop display
+                document.getElementById('shopItems').innerHTML = this.generateShopItems(category);
+            }
+
+            isEquipped(item) {
+                if (item.category === 'avatar') return this.player.equipped.avatar === item.icon;
+                if (item.category === 'theme') return this.player.equipped.theme === item.color;
+                if (item.category === 'frame') return this.player.equipped.frame === item.style;
+                if (item.category === 'boost') return this.player.equipped.boost && this.player.equipped.boost.id === item.id;
+                return false;
+            }
+
+            hasBoost(type) {
+                return this.player.equipped.boost && this.player.equipped.boost.effect === type;
+            }
+
+            getActiveBoost(type) {
+                if (this.hasBoost(type)) {
+                    return this.player.equipped.boost;
+                }
+                return null;
+            }
+
+            applyTheme(color) {
+                if (color === 'rainbow') {
+                    document.documentElement.style.setProperty('--primary-color', '#00d4ff');
+                    // Add rainbow animation
+                } else {
+                    document.documentElement.style.setProperty('--primary-color', color);
+                }
+            }
+
+            // Character System
+            showCharacter() {
+                this.showModal('Character Customization', `
+                    <div class="character-creator">
+                        <div class="character-preview">
+                            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Your Agent</h3>
+                            <div class="character-display">
+                                <div class="character-avatar">${this.player.character.avatar}</div>
+                                <div class="character-frame"></div>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <input type="text" value="${this.player.character.name}" 
+                                       style="padding: 0.5rem; background: var(--card-bg); border: 1px solid var(--border-color);
+                                              color: white; text-align: center;"
+                                       onchange="game.updateCharacterName(this.value)">
+                            </div>
+                        </div>
+                        <div class="customization-options">
+                            <div class="customization-section">
+                                <h4>Avatar Style</h4>
+                                <div class="color-options">
+                                    ${this.shopItems.avatars.filter(a => a.owned || this.player.inventory.includes(a.id)).map(avatar => `
+                                        <div style="font-size: 2rem; cursor: pointer; padding: 0.5rem;"
+                                             onclick="game.selectAvatar('${avatar.icon}')">${avatar.icon}</div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="customization-section">
+                                <h4>Statistics</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div>Total XP Earned: ${this.player.statistics.totalXpEarned}</div>
+                                    <div>Missions Completed: ${this.player.statistics.missionsCompleted}</div>
+                                    <div>Accuracy: ${this.player.statistics.accuracy}%</div>
+                                    <div>Highest Streak: ${this.player.statistics.highestStreak}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            selectAvatar(avatar) {
+                this.player.character.avatar = avatar;
+                this.player.equipped.avatar = avatar;
+                document.querySelector('.character-avatar').textContent = avatar;
+                this.saveGameData();
+            }
+
+            updateCharacterName(name) {
+                this.player.character.name = name;
+                this.saveGameData();
+            }
+
+            // Profile System
+            showProfile() {
+                const achievements = [
+                    { name: 'First Steps', icon: '🎯', unlocked: this.player.statistics.missionsCompleted >= 1 },
+                    { name: 'Phishing Expert', icon: '🎣', unlocked: this.player.completedMissions.includes('phishing_basics') },
+                    { name: 'Code Master', icon: '💻', unlocked: this.player.completedMissions.filter(m => m.includes('code')).length >= 2 },
+                    { name: 'Elite Agent', icon: '⭐', unlocked: this.player.level >= 10 },
+                    { name: 'Cyber Warrior', icon: '⚔️', unlocked: this.player.level >= 20 },
+                    { name: 'Perfect Score', icon: '💯', unlocked: this.player.statistics.accuracy >= 95 },
+                    { name: 'Speed Demon', icon: '⚡', unlocked: false },
+                    { name: 'Completionist', icon: '🏆', unlocked: this.player.completedMissions.length >= 15 }
+                ];
+                
+                this.showModal('Agent Profile', `
+                    <div style="display: grid; gap: 2rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">${this.player.character.avatar}</div>
+                            <h2 style="color: var(--primary-color);">${this.player.character.name}</h2>
+                            <p style="color: var(--dim-text);">${this.player.rank} • Level ${this.player.level}</p>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                            <div style="background: rgba(0, 212, 255, 0.1); padding: 1rem; border-radius: 10px;">
+                                <div style="color: var(--dim-text);">Total Score</div>
+                                <div style="color: var(--primary-color); font-size: 1.5rem;">${this.player.score.toLocaleString()}</div>
+                            </div>
+                            <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 10px;">
+                                <div style="color: var(--dim-text);">Missions</div>
+                                <div style="color: var(--success-color); font-size: 1.5rem;">${this.player.statistics.missionsCompleted}</div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Achievements</h3>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+                                ${achievements.map(a => `
+                                    <div style="text-align: center; padding: 1rem; border-radius: 10px;
+                                         background: ${a.unlocked ? 'rgba(0, 255, 136, 0.1)' : 'rgba(255, 255, 255, 0.05)'};">
+                                        <div style="font-size: 2rem; ${!a.unlocked ? 'filter: grayscale(1);' : ''}">${a.icon}</div>
+                                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">${a.name}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            // Settings
+            showSettings() {
+                this.showModal('Settings', `
+                    <div style="display: grid; gap: 2rem;">
+                        <div>
+                            <h4 style="color: var(--primary-color); margin-bottom: 1rem;">Game Settings</h4>
+                            <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <span>Auto-Save</span>
+                                <input type="checkbox" checked>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 1rem;">
+                                <span>Show Hints</span>
+                                <input type="checkbox" checked>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <h4 style="color: var(--primary-color); margin-bottom: 1rem;">Data Management</h4>
+                            <div style="display: flex; gap: 1rem;">
+                                <button class="cyber-btn" onclick="game.exportSave()">Export Save</button>
+                                <button class="cyber-btn" onclick="game.importSave()">Import Save</button>
+                                <button class="cyber-btn" onclick="game.resetProgress()" 
+                                        style="background: rgba(255, 0, 85, 0.2);">Reset Progress</button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            // Player Management
+            checkLevelUp() {
+                const xpNeeded = this.player.level * 150;
+                while (this.player.xp >= xpNeeded) {
+                    this.player.level++;
+                    this.player.xp -= xpNeeded;
+                    this.updatePlayerRank();
+                    
+                    this.showNotification('Level Up!', `You've reached Level ${this.player.level}! +500 bonus credits!`);
+                    this.player.credits += 500;
+                }
+                
+                this.updateHUD();
+            }
+
+            updatePlayerRank() {
+                const ranks = [
+                    { name: 'Novice', minLevel: 1 },
+                    { name: 'Apprentice', minLevel: 5 },
+                    { name: 'Specialist', minLevel: 10 },
+                    { name: 'Expert', minLevel: 20 },
+                    { name: 'Master', minLevel: 30 },
+                    { name: 'Grandmaster', minLevel: 50 }
+                ];
+                
+                for (let i = ranks.length - 1; i >= 0; i--) {
+                    if (this.player.level >= ranks[i].minLevel) {
+                        this.player.rank = ranks[i].name;
+                        break;
+                    }
+                }
+            }
+
+            unlockNewMissions() {
+                this.missions.forEach(mission => {
+                    if (!mission.unlocked && this.canUnlockMission(mission)) {
+                        mission.unlocked = true;
+                        this.showNotification('New Mission Unlocked!', `${mission.title} is now available!`);
+                    }
+                });
+            }
+
+            updateHUD() {
+                document.getElementById('playerLevel').textContent = this.player.level;
+                document.getElementById('playerXP').textContent = this.player.xp;
+                document.getElementById('playerCredits').textContent = this.player.credits.toLocaleString();
+                document.getElementById('playerRank').textContent = this.player.rank;
+                
+                const xpNeeded = this.player.level * 150;
+                const xpPercent = (this.player.xp / xpNeeded) * 100;
+                document.getElementById('xpBar').style.width = xpPercent + '%';
+            }
+
+            // UI Helpers
+            showNotification(title, message) {
+                const notification = document.getElementById('notification');
+                document.getElementById('notificationTitle').textContent = title;
+                document.getElementById('notificationContent').textContent = message;
+                
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+
+            showModal(title, content) {
+                const modal = document.getElementById('modal');
+                const modalContent = document.getElementById('modalContent');
+                modalContent.innerHTML = `
+                    <h2 style="font-family: 'Orbitron', monospace; color: var(--primary-color); margin-bottom: 2rem; text-align: center;">
+                        ${title}
+                    </h2>
+                    ${content}
+                `;
+                modal.classList.add('active');
+            }
+
+            closeModal() {
+                document.getElementById('modal').classList.remove('active');
+            }
+
+            showHint() {
+                if (this.hasBoost('hints')) {
+                    this.showNotification('Hint', 'Look for spelling errors and suspicious domains!');
+                }
+            }
+
+            // Data Management
+            saveGameData() {
+                const saveData = {
+                    player: this.player,
+                    missions: this.missions,
+                    shopItems: this.shopItems,
+                    timestamp: Date.now()
+                };
+                
+                try {
+                    localStorage.setItem('cyberGuardSave', JSON.stringify(saveData));
+                    console.log('Game saved successfully');
+                } catch (e) {
+                    console.error('Failed to save game:', e);
+                }
+            }
+
+            loadGameData() {
+                try {
+                    const savedData = localStorage.getItem('cyberGuardSave');
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        this.player = { ...this.player, ...data.player };
+                        
+                        // Merge mission unlocks
+                        if (data.missions) {
+                            data.missions.forEach((savedMission, index) => {
+                                if (this.missions[index]) {
+                                    this.missions[index].unlocked = savedMission.unlocked;
+                                }
+                            });
+                        }
+                        
+                        // Merge shop purchases
+                        if (data.shopItems) {
+                            Object.keys(data.shopItems).forEach(category => {
+                                if (this.shopItems[category]) {
+                                    data.shopItems[category].forEach((item, index) => {
+                                        if (this.shopItems[category][index]) {
+                                            this.shopItems[category][index].owned = item.owned;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        
+                        console.log('Game loaded successfully');
+                    }
+                } catch (e) {
+                    console.error('Failed to load game:', e);
+                }
+            }
+
+            exportSave() {
+                const saveData = localStorage.getItem('cyberGuardSave') || '{}';
+                const blob = new Blob([saveData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'cyberguard_save.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                this.showNotification('Export Complete', 'Save file downloaded!');
+            }
+
+            importSave() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            try {
+                                const data = JSON.parse(event.target.result);
+                                localStorage.setItem('cyberGuardSave', JSON.stringify(data));
+                                location.reload();
+                            } catch (error) {
+                                this.showNotification('Import Failed', 'Invalid save file!');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+                input.click();
+            }
+
+            resetProgress() {
+                if (confirm('Are you sure you want to reset all progress? This cannot be undone!')) {
+                    localStorage.removeItem('cyberGuardSave');
+                    location.reload();
+                }
+            }
+
+            // Utility Functions
+            caesarCipher(text, shift) {
+                return text.split('').map(char => {
+                    if (char.match(/[A-Z]/)) {
+                        return String.fromCharCode((char.charCodeAt(0) - 65 + shift) % 26 + 65);
+                    }
+                    return char;
+                }).join('');
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            handleKeyPress(e) {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('modal').classList.contains('active')) {
+                        this.closeModal();
+                    } else if (this.currentScreen === 'challengeScreen') {
+                        this.pauseChallenge();
+                    }
+                }
+            }
+        }
+
+        // Initialize the game
+        const game = new CyberGuardAcademy();
+    </script>
+                
+                
+</body>
+</html>
